@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
 import { API_BASE_URL } from "../config.js";
 import { capitalize } from "../utils.js";
 
@@ -21,7 +19,7 @@ function DetailPage() {
         const response = await fetch(`${API_BASE_URL}/pokemon/${name}`);
 
         if (!response.ok) {
-          throw new Error(`No Pokémon named "${name}" — check the spelling.`);
+          throw new Error(`Server responded with status ${response.status}`);
         }
 
         const data = await response.json();
@@ -52,6 +50,11 @@ function DetailPage() {
 
   return (
     <div className="detail-page">
+      <div className="app-header">
+        <Link to="/" className="app-title-link">
+          <h1>Pokédex</h1>
+        </Link>
+      </div>
       <Link to="/" className="back-link">← Back to list</Link>
       <img
         src={pokemon.sprites.other["official-artwork"].front_default}
