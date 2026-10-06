@@ -1,13 +1,5 @@
-# Standard GitHub Pages deployment for a Vite app deployed to the main
-# site (username.github.io) under /<repo>/.
-#
-# This works because:
-#   - vite.config.js sets base: "/pokedex-mini/" to match the repo sub-path
-#   - App.jsx uses HashRouter, so client-side routes never 404 on refresh
-#
-# After pushing this, go to:
-#   Repo -> Settings -> Pages -> Source -> choose "GitHub Actions"
-# (once, manually). Every push to main will then auto-redeploy.
+# Deploy pokedex-mini to GitHub Pages (project lives in the pokedex-mini/ subfolder)
+# GitHub Actions only reads workflows from <repo root>/.github/workflows/.
 
 name: Deploy to GitHub Pages
 
@@ -16,13 +8,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Permissions required for Pages + OIDC deployment
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Only one Pages deploy at a time per repo
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -30,6 +20,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pokedex-mini
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,6 +32,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: pokedex-mini/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -49,7 +43,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: pokedex-mini/dist
 
   deploy:
     needs: build
